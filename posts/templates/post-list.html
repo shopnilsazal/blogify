@@ -9,7 +9,7 @@
                     <div class="card-content">
                         <span class="card-meta">Posted on: {{ post.updated|date }}</span>
                         <h3 class="card-title"><a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a></h3>
-                        <p>{{ post.content|slice:":140" }}</p>
+                        <p>{{ post.content|truncatechars:140 }}</p>
                     </div>
                     <div class="card-action">
                         {% for cat in post.categories.all %}<a href="#">{{ cat.name }}</a> {% endfor %}
@@ -17,6 +17,7 @@
                     </div>
                 </div>
             </div>
+            {% cycle '' '</div><div class="row">' %}
         {% endfor %}
     </div>
 
