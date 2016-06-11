@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="input-field col s12">
+                <label>Title</label>
+                {{ form.title }}
+            </div>
+            <div class="input-field col s12">
+                <label>Content</label>
+                {{ form.content }}
+            </div>
+            <div class="input-field col s6">
+                {{ form.categories }}
+                <label>Categories</label>
+            </div>
+            <div class="input-field col s6">
+                {{ form.tags }}
+                <label>Tags</label>
+            </div>
+        </div>
+
+        <button class="btn waves-effect waves-light" type="submit">Create Post</button>
+    </form>
+{% endblock %}
