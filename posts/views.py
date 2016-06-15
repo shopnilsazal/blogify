@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from .models import Post
 from .forms import PostForm
@@ -8,7 +8,17 @@ from .forms import PostForm
 
 
 def post_list(request):
-    posts = Post.objects.all()
+    posts_list = Post.objects.all().order_by("-timestamp")
+    paginator = Paginator(posts_list, 4)
+    page = request.GET.get('page')
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
     context = {
         'posts': posts
     }
@@ -16,7 +26,7 @@ def post_list(request):
 
 
 def post_create(request):
-    form = PostForm(request.POST)
+    form = PostForm(request.POST, request.FILES)
     if form.is_valid():
         form.save()
         messages.success(request, "Successfully Created")
@@ -37,7 +47,7 @@ def post_detail(request, pk):
 
 def post_update(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    form = PostForm(request.POST, instance=post)
+    form = PostForm(request.POST, request.FILES, instance=post)
     if form.is_valid():
         form.save()
         messages.success(request, "Successfully Saved")

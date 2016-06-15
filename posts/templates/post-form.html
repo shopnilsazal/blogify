@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="row">
             <div class="input-field col s12">
@@ -11,6 +11,15 @@
             <div class="input-field col s12">
                 <label>Content</label>
                 {{ form.content }}
+            </div>
+            <div class="file-field input-field col s12">
+                <div class="btn">
+                    <span>Image</span>
+                    {{ form.image }}
+                </div>
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" placeholder="Upload featured image">
+                </div>
             </div>
             <div class="input-field col s6">
                 {{ form.categories }}

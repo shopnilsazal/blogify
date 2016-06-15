@@ -11,5 +11,6 @@ class PostForm(forms.ModelForm):
             "title",
             "content",
             "categories",
-            "tags"
+            "tags",
+            "image"
         ]
