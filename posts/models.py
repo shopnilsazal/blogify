@@ -1,11 +1,13 @@
 from django.db import models
+from django.utils.text import slugify
 
 # Create your models here.
 
 
 class Post(models.Model):
     title = models.CharField(max_length=120)
-    image = models.FileField(null=True, blank=True)
+    slug = models.SlugField(unique=True)
+    image = models.FileField(null=True, blank=True, upload_to='%Y/%m')
     content = models.TextField()
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -24,6 +26,7 @@ class Post(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=70)
+    slug = models.SlugField(unique=True)
 
     def __str__(self):
         return self.name
@@ -31,6 +34,7 @@ class Category(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=70)
+    slug = models.SlugField(unique=True)
 
     def __str__(self):
         return self.name

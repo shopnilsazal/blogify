@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.generic import DetailView
 from django.contrib import messages
-from .models import Post
+from .models import Post, Category, Tag
 from .forms import PostForm
 
 # Create your views here.
@@ -37,16 +38,16 @@ def post_create(request):
     return render(request, 'post-form.html', context)
 
 
-def post_detail(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+def post_detail(request, slug):
+    post = get_object_or_404(Post, slug=slug)
     context = {
         'post': post
     }
     return render(request, 'post-detail.html', context)
 
 
-def post_update(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+def post_update(request, slug):
+    post = get_object_or_404(Post, slug=slug)
     form = PostForm(request.POST, request.FILES, instance=post)
     if form.is_valid():
         form.save()
@@ -59,8 +60,21 @@ def post_update(request, pk):
     return render(request, 'post-form.html', context)
 
 
-def post_delete(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+def post_delete(request, slug):
+    post = get_object_or_404(Post, slug=slug)
     post.delete()
     messages.success(request, "Successfully Deleted")
     return redirect('post-list')
+
+
+def post_category(request, slug):
+    cat = get_object_or_404(Category, slug=slug)
+    context = {
+        'category': cat
+    }
+    return render(request, 'post-category.html', context)
+
+# class CategoryDetail(DetailView):
+#     model = Category
+#     template_name = 'post-category.html'
+#
