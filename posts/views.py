@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.views.generic import DetailView
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from .models import Post, Category, Tag
 from .forms import PostForm
 
@@ -26,6 +26,7 @@ def post_list(request):
     return render(request, "post-list.html", context)
 
 
+@login_required
 def post_create(request):
     form = PostForm(request.POST, request.FILES)
     if form.is_valid():
@@ -68,13 +69,40 @@ def post_delete(request, slug):
 
 
 def post_category(request, slug):
-    cat = get_object_or_404(Category, slug=slug)
+    cat_name = get_object_or_404(Category, slug=slug)
+    cat_list = Post.objects.filter(categories__slug=slug)
+    paginator = Paginator(cat_list, 4)
+    page = request.GET.get('page')
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
     context = {
-        'category': cat
+        'posts': posts,
+        'cat_name': cat_name
     }
     return render(request, 'post-category.html', context)
 
-# class CategoryDetail(DetailView):
-#     model = Category
-#     template_name = 'post-category.html'
-#
+
+def post_tags(request, slug):
+    tag_name = get_object_or_404(Tag, slug=slug)
+    tag_list = Post.objects.filter(tags__slug=slug)
+    paginator = Paginator(tag_list, 4)
+    page = request.GET.get('page')
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+    context = {
+        'posts': posts,
+        'tag_name': tag_name
+    }
+    return render(request, 'post-tag.html', context)
+
+

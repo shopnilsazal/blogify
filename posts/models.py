@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -7,12 +8,13 @@ from django.utils.text import slugify
 class Post(models.Model):
     title = models.CharField(max_length=120)
     slug = models.SlugField(unique=True)
+    user = models.ForeignKey(User, default=1)
     image = models.FileField(null=True, blank=True, upload_to='%Y/%m')
     content = models.TextField()
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
-    categories = models.ManyToManyField("Category")
-    tags = models.ManyToManyField("Tag")
+    categories = models.ManyToManyField("Category", related_name='post_cat')
+    tags = models.ManyToManyField("Tag", related_name='post_tag')
 
     def __str__(self):
         return self.title
