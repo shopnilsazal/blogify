@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from .models import Post, Category, Tag
 from .forms import PostForm
 
@@ -9,7 +10,13 @@ from .forms import PostForm
 
 
 def post_list(request):
-    posts_list = Post.objects.all().order_by("-timestamp")
+    posts_list = Post.objects.all()
+    query = request.GET.get('q')
+    if query:
+        posts_list = Post.objects.filter(
+            Q(title__icontains=query) | Q(content__icontains=query) |
+            Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
+        ).distinct()
     paginator = Paginator(posts_list, 4)
     page = request.GET.get('page')
 
