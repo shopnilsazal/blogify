@@ -1,11 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
-from django.contrib.contenttypes.fields import ContentType
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Post, Category, Tag
 from .forms import PostForm
+from django.contrib.contenttypes.models import ContentType
+from comments.forms import CommentForm
 from comments.models import Comment
 
 # Create your views here.
@@ -37,7 +38,7 @@ def post_list(request):
 
 @login_required
 def post_create(request):
-    form = PostForm(request.POST, request.FILES)
+    form = PostForm(request.POST or None, request.FILES)
     if form.is_valid():
         form.save()
         messages.success(request, "Successfully Created")
@@ -50,11 +51,29 @@ def post_create(request):
 
 def post_detail(request, slug):
     post = get_object_or_404(Post, slug=slug)
-    content_type = ContentType.objects.get_for_model(Post)
-    comments = Comment.objects.filter(content_type=content_type, object_id=post.id)
+    comments = Comment.objects.filter_by_instance(post)
+    initial_data = {
+        'content_type': ContentType.objects.get_for_model(Post),
+        'object_id': post.id
+    }
+    form = CommentForm(request.POST or None, initial=initial_data)
+    if form.is_valid():
+        c_type = form.cleaned_data.get('content_type')
+        content_type = ContentType.objects.get(model=c_type)
+        obj_id = form.cleaned_data.get('object_id')
+        content_data = form.cleaned_data.get('content')
+
+        new_comment, created = Comment.objects.get_or_create(
+            user=request.user,
+            content_type=content_type,
+            object_id=obj_id,
+            content=content_data
+        )
+
     context = {
         'post': post,
-        'comments': comments
+        'comments': comments,
+        'comment_form': form
     }
     return render(request, 'post-detail.html', context)
 

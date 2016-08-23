@@ -15,6 +15,12 @@
         </div>
     <div class="comments col s12 z-depth-1">
     <h4>Comments</h4>
+    <div class="comment-form">
+        <form action="." method="POST"> {% csrf_token %}
+            {{ comment_form.as_p }}
+            <input type="submit" class="btn waves-effect waves-light" value="Post Comment">
+        </form>
+    </div>
         {% for comment in comments %}
             <div class="comment">
             <h5>{{ comment.user }}</h5>
