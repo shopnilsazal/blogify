@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
+from django.contrib.contenttypes.fields import ContentType
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Post, Category, Tag
 from .forms import PostForm
+from comments.models import Comment
 
 # Create your views here.
 
@@ -48,8 +50,11 @@ def post_create(request):
 
 def post_detail(request, slug):
     post = get_object_or_404(Post, slug=slug)
+    content_type = ContentType.objects.get_for_model(Post)
+    comments = Comment.objects.filter(content_type=content_type, object_id=post.id)
     context = {
-        'post': post
+        'post': post,
+        'comments': comments
     }
     return render(request, 'post-detail.html', context)
 

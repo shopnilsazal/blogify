@@ -13,5 +13,14 @@
             <span>Tags: {% for tag in post.tags.all %}{{ tag.name }} {% endfor %}</span>
             <p>{{ post.content|linebreaks }}</p>
         </div>
+    <div class="comments col s12 z-depth-1">
+    <h4>Comments</h4>
+        {% for comment in comments %}
+            <div class="comment">
+            <h5>{{ comment.user }}</h5>
+            <p>{{ comment.content }}</p>
+            </div>
+        {% endfor %}
+    </div>
     </div>
 {% endblock %}
