@@ -1,7 +1,7 @@
 # Blogify
 #### A simple blog app built with Love and Django.
 
-It supports posts with category, tags and comments. You can also search posts.
+It supports posts with category, tags and comments. You can also search posts. Materializecss is used for frontend.
 
 ## Instructions
 
